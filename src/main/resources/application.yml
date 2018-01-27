@@ -1,0 +1,9 @@
+settings:
+  filePath: test.txt
+  connection:
+    readTimeoutMs: 15000
+    connectTimeoutMs: 3000
+    userAgent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36
+    acceptLanguage: en-US
+  threadCount: 8
+  noCountry: NO_COUNTRY
