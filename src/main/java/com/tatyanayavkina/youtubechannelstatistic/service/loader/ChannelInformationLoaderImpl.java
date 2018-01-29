@@ -32,7 +32,7 @@ public class ChannelInformationLoaderImpl implements ChannelInformationLoader {
     }
 
     @Override
-    public void loadInformation(String channelId, String url, CountDownLatch latch) {
+    public void loadInformation(String channelId, String url) {
         try {
             String html = webPageDownloader.getPageContent(url);
             CountryAndSubscribers countryAndSubscribers = channelPageParser.parse(html);
@@ -43,8 +43,6 @@ public class ChannelInformationLoaderImpl implements ChannelInformationLoader {
             repository.saveChannelInformation(channelInformation);
         } catch (Exception e) {
             logger.error("Can not get page content for channelId={}", channelId);
-        } finally {
-            latch.countDown();
         }
     }
 }

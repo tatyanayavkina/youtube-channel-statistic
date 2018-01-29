@@ -2,17 +2,18 @@ package com.tatyanayavkina.youtubechannelstatistic.service.loader;
 
 import com.tatyanayavkina.youtubechannelstatistic.ApplicationSettings;
 import com.tatyanayavkina.youtubechannelstatistic.task.ChannelTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 @Service
 public class InformationProcessorImpl implements InformationProcessor {
+
+    private final static Logger logger = LoggerFactory.getLogger(InformationProcessorImpl.class);
 
     private final ExecutorService executorService;
 
@@ -25,14 +26,18 @@ public class InformationProcessorImpl implements InformationProcessor {
     }
 
     @Override
-    public void process(Set<String> channelIds, CountDownLatch latch) {
-        channelIds.forEach((channelId) -> {
-            executorService.execute(new ChannelTask(channelId, latch, channelInformationLoader));
-        });
-    }
+    public void process(Set<String> channelIds) {
+        CompletableFuture<?>[] tasks = channelIds.stream()
+                .map(channelId -> CompletableFuture.runAsync(new ChannelTask(channelId, channelInformationLoader), executorService))
+                .map(task -> task.handle((result, exception) -> {
+                    if (exception != null) {
+                        logger.warn("Channel task was completed wih error={}", exception);
+                    }
+                    return result;
+                }))
+                .toArray(CompletableFuture[]::new);
 
-    @Override
-    public void stop() {
+        CompletableFuture.allOf(tasks).join();
         shutdownAndAwaitTermination(executorService);
     }
 

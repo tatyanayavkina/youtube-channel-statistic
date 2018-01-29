@@ -14,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,13 +36,7 @@ public class YoutubeChannelStatisticApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         Set<String> channelIds = readIdsFromFile(settings.getFilePath());
-        CountDownLatch taskProcessed = new CountDownLatch(channelIds.size());
-        informationProcessor.process(channelIds, taskProcessed);
-
-        taskProcessed.await();
-
-        informationProcessor.stop();
-
+        informationProcessor.process(channelIds);
         List<ChannelStatistic> statistics = dataService.getChannelStatistics();
         fileService.generateFileWithData(statistics);
     }
