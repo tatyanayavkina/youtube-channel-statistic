@@ -10,9 +10,9 @@ import java.util.regex.Pattern;
 @Service
 public class ChannelPageParserImpl implements ChannelPageParser {
 
-    // "country":{"simpleText":"Мексика"}
+    // "country":{"simpleText":"Mexico"}
     private final Pattern COUNTRY_PATTERN = Pattern.compile("\"country\":\\{\"simpleText\":\"([^\"]+?)\"\\}");
-   // "subscriberCountText":{"runs":[{"text":"10 578 подписчиков"}]}
+    // "subscriberCountText":{"runs":[{"text":"10 578 subscribers"}]}
     private final Pattern SUBSCRIBERS_PATTERN = Pattern.compile("\"subscriberCountText\":\\{\"runs\":\\[\\{\"text\":\"([^\"]+?)\"\\}\\]\\}");
 
     private final String defaultCountry;
